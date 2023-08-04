@@ -1,0 +1,188 @@
+CREATION OF TABLES :-
+
+CREATE TABLE products (product_id INT PRIMARY KEY, name VARCHAR2(200), description VARCHAR2(400), price INT, weight INT, image VARCHAR2(200), quantity INT);
+CREATE TABLE categories (category_id INT PRIMARY KEY, name VARCHAR2(200), description VARCHAR2(200));
+CREATE TABLE customers (customer_id INT PRIMARY KEY, email VARCHAR2(200), password VARCHAR2(200), name VARCHAR2(200), address VARCHAR2(200), city VARCHAR2(200), state VARCHAR2(200), country VARCHAR2(200), pincode INT, mobile VARCHAR2(40), DOB DATE);
+CREATE TABLE orders (order_id INT PRIMARY KEY, customer_id INT REFERENCES customers(customer_id), amount INT, order_date DATE, delivery_date DATE, payment_id VARCHAR2(200));
+CREATE TABLE product_category (product_category_id INT PRIMARY KEY, product_id INT REFERENCES products(product_id), category_id INT REFERENCES categories(category_id));
+CREATE TABLE order_product (order_product_id INT PRIMARY KEY, product_id INT REFERENCES products(product_id), order_id INT REFERENCES orders(order_id), quantity INT);
+
+INSERTION OF VALUES :- 
+
+INSERT INTO products VALUES (1, 'p1', 'p1-desc', 100, 10, 'link1', 20);
+INSERT INTO products VALUES (2, 'p2', 'p2-desc', 200, 20, 'link2', 30);
+INSERT INTO products VALUES (3, 'p3', 'p3-desc', 300, 30, 'link3', 40);
+INSERT INTO products VALUES (4, 'p4', 'p4-desc', 400, 40, 'link4', 50);
+INSERT INTO products VALUES (5, 'p5', 'p5-desc', 500, 50, 'link5', 60);
+INSERT INTO products VALUES (6, 'p6', 'p6-desc', 600, 60, 'link6', 70);
+
+SELECT * FROM products; //Just to show the table with attributes and values
+
+INSERT INTO categories VALUES (1, 'c1', 'c1-desc');
+INSERT INTO categories VALUES (2, 'c2', 'c2-desc');
+INSERT INTO categories VALUES (3, 'c3', 'c3-desc');
+INSERT INTO categories VALUES (4, 'c4', 'c4-desc');
+INSERT INTO categories VALUES (5, 'c5', 'c5-desc');
+INSERT INTO categories VALUES (6, 'c6', 'c6-desc');
+
+SELECT * FROM categories; //Just to show table with attributes and values
+
+INSERT INTO customers VALUES(1, 'c1@email.com', 'c1-pass', 'c1', 'c1-addr', 'c1-city', 'c1-state', 'c1-country', '100000', '1','01-JAN-2000');
+INSERT INTO customers VALUES(2, 'c2@email.com', 'c2-pass', 'c2', 'c2-addr', 'c2-city', 'c2-state', 'c2-country','100001', '2', '10-OCT-1995');
+INSERT INTO customers VALUES(3, 'c3@email.com', 'c3-pass', 'c3', 'c3-addr', 'c3-city', 'c3-state', 'c3-country','100002', '3', '15-SEP-1998');
+INSERT INTO customers VALUES(4, 'c4@email.com', 'c4-pass', 'c4', 'c4-addr', 'c4-city', 'c4-state', 'c4-country','100003', '4', '20-MAR-2002');
+INSERT INTO customers VALUES(5, 'c5@email.com', 'c5-pass', 'c5', 'c5-addr', 'c5-city', 'c5-state', 'c5-country','100004', '5', '28-JUN-1999');
+INSERT INTO customers VALUES(6, 'c6@email.com', 'c6-pass', 'c6', 'c6-addr', 'c6-city', 'c6-state', 'c6-country','100005', '6', '05-DEC-2001');
+
+SELECT * FROM customers; //Just to show table with attributes and values
+
+INSERT INTO orders(order_id, customer_id, amount, order_date, delivery_date, payment_id) VALUES (1, 1, 100,'10-JAN-2022','21-JAN-2022', 'payment1');
+INSERT INTO orders(order_id, customer_id, amount, order_date, delivery_date, payment_id) VALUES (2, 2, 200,'27-FEB-2022','01-MAR-2022', 'payment2');
+INSERT INTO orders(order_id, customer_id, amount, order_date, delivery_date, payment_id) VALUES (3, 3, 300,'12-MAR-2022','15-MAR-2022', 'payment3');
+INSERT INTO orders(order_id, customer_id, amount, order_date, delivery_date, payment_id) VALUES (4, 4, 400,'04-JUL-2021','08-JUL-2021', 'payment4');
+INSERT INTO orders(order_id, customer_id, amount, order_date, delivery_date, payment_id) VALUES (5, 5, 500,'05-OCT-2021','07-OCT-2021', 'payment5');
+INSERT INTO orders(order_id, customer_id, amount, order_date, delivery_date, payment_id) VALUES (6, 6, 600,'10-JUN-2020','15-JUN-2020', 'payment6');
+
+SELECT * FROM orders; //Just to show the table with attributes and values
+
+INSERT INTO product_category VALUES (1, 1, 1);
+INSERT INTO product_category VALUES (2, 2, 2);
+INSERT INTO product_category VALUES (3, 3, 3);
+INSERT INTO product_category VALUES (4, 4, 4);
+INSERT INTO product_category VALUES (5, 5, 5);
+INSERT INTO product_category VALUES (6, 6, 6);
+
+SELECT * FROM product_category
+
+// If you wish to get details of entire products information including categories use the following command:
+SELECT * FROM product_category pc JOIN products p ON pc.product_id=p.product_id JOIN categories c ON pc.category_id=c.category_id;
+
+INSERT INTO order_product VALUES (1, 1, 1, 1);
+INSERT INTO order_product VALUES (2, 2, 2, 1);
+INSERT INTO order_product VALUES (3, 3, 3, 1);
+INSERT INTO order_product VALUES (4, 4, 4, 1);
+INSERT INTO order_product VALUES (5, 5, 5, 1);
+INSERT INTO order_product VALUES (6, 6, 6, 1);
+
+SELECT * FROM order_product
+
+// If you wish to get details of entire orders information including categories use the following command:
+
+SELECT * FROM order_product op JOIN orders o ON o.order_id=op.order_id JOIN products p ON op.product_id=p.product_id;
+
+BASIC QUERIES :-
+
+Total Number of Products Sold
+SELECT SUM(quantity) FROM order_product;
+
+Total Number of a specific Products Sold
+SELECT SUM(quantity) FROM order_product WHERE product_id=(SELECT product_id FROM products WHERE name='p1');
+
+Total cost earned by specific product
+SELECT SUM(op.quantity*p.price) FROM order_product op JOIN products p ON op.product_id=p.product_id WHERE p.name='p4';
+
+Customers Buying More than a specific amount in a single order
+SELECT * FROM customers c JOIN orders o ON c.customer_id=o.customer_id where ocu.amount > 300;
+
+Users who spent greater than some amount
+SELECT o.customer_id FROM customers c JOIN orders o ON c.customer_id=o.customer_id GROUP BY c.customer_id HAVING SUM(o.amount) > 300;
+
+Total Amount spent by each user
+SELECT o.customer_id,SUM(o.amount) FROM customers c JOIN orders o ON c.customer_id=o.customer_id GROUP BY c.customer_id;
+
+PL/SQL IMPLEMENTATION :-
+
+To print total no. of orders
+
+create or replace procedure tot_orders
+is
+quan number(5);
+begin
+select count(*) into quan from orders;
+dbms_output.put_line('total ' || quan);
+end;
+
+To print total ammount of value present in your orders
+create or replace procedure tot_cost
+is
+costs number(5);
+begin
+select sum(amount) into costs from orders;  
+dbms_output.put_line('total ' || costs);
+end;
+
+Procedure to automatically apply discount based on order value
+create or replace procedure discount
+is
+costs number(5);
+begin
+select sum(amount) into costs from orders;
+if (costs<=500) then 
+costs := costs-0;
+elsif (costs>500 and costs <=1000) then  
+costs := 0.9*costs;
+else 
+costs := 0.8*costs;
+end if;
+dbms_output.put_line('Total cost after discount ' || costs);
+end;
+
+This takes coupon code to apply discount based on coupon code
+
+create or replace procedure coupon(code in number)
+is
+costs number(5);
+coup_10 number(9):=1032;
+coup_5 number(9):=8532;
+begin
+select sum(amount) into costs from orders;  
+if (code = coup_10) then 
+costs:=costs*0.9;
+dbms_output.put_line('Discount applied: '||10||' percent');
+elsif (code = coup_5) then 
+costs:=costs*0.95;
+dbms_output.put_line('Discount applied: '||5||' percent');
+end if;
+dbms_output.put_line('Total checkout value '||costs);
+end;
+
+To filter products based on cost
+
+create or replace procedure cost_filter(c in number,t in varchar)
+    is
+    cs products.price%type;
+    ty products.name%type;
+    id products.product_id%type;
+    cursor cf is
+    select product_id,price,name from product where price<c;
+    begin
+    open cf;
+    loop
+    fetch cf into id,cs,ty;
+    exit when cf%notfound;
+    dbms_output.put_line('Product' || id || 'has cost ' || cs || ' and the product is ' || ty);
+    end loop;
+    close cf;
+    exception
+    when no_data_found then
+    dbms_output.put_line('Sorry no such products exist');
+    end;
+
+Trigger :-
+
+If any product is present on your order’s page, then it will display a proper notification for your discounted price
+CREATE OR REPLACE TRIGGER display_reduced_price
+BEFORE UPDATE ON orders
+FOR EACH ROW 
+WHEN (NEW.order_id > 0) 
+DECLARE 
+   reduction number; 
+BEGIN 
+   reduction := :OLD.amount  - :NEW.amount;
+   if (reduction>0) then
+   dbms_output.put_line('Congratulations , You have just saved RS. ' || reduction); 
+   END IF;
+END;
+
+
+
